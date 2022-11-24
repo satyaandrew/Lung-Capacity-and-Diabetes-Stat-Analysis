@@ -1,0 +1,459 @@
+---
+title: "C7081 Statistical Analysis for Data Science"
+author: '22358100'
+date: "2022-11-24"
+output: word_document
+---
+
+GITHUB LINK: [https://github.com/satyaandrew/Assignment-C7081.git]
+
+*Data Source*
+
+Dataset "new" was taken from Kaggle: [https://www.kaggle.com/datasets/radhakrishna4/lung-capacity]
+
+Dataset "Diabetes" is taken from kaggle: [https://www.kaggle.com/datasets/akshaydattatraykhare/diabetes-dataset]
+
+
+# Introduction
+
+In this assignment I have taken 2 Datasets: 1. lung capacity dataset named "new" and 2. Diabetes Dataset
+
+1.Lung capacity Dataset- "new" Dataset
+This data is showing lung closing capacity of smokers and non-smokers by age, gender and height.
+Here's the meaning of variables:
+LungCap: It’s the lung closing capacity of the person, which means the smallest airways in which the respiratory bronchioles collapse.
+Age: how old is the person given data is in years in the dataset
+Height: It’s how tall is the person, given data is in Inches in the dataset
+Smoke: If the person smokes or doesn’t smoke
+Gender: the person male or female
+Cesarean: If they’re born by Cesarean
+
+2. Diabetes Dataset
+
+This dataset is originally from the National Institute of Diabetes and Digestive and Kidney
+Diseases. The objective of the dataset is to diagnostically predict whether a patient has diabetes,
+based on certain diagnostic measurements included in the dataset. Several constraints were placed
+on the selection of these instances from a larger database. In particular, all patients here are females
+at least 21 years old of Pima Indian heritage.
+
+# Objective
+
+1. I used these two datasets to run Regression and different models of regression on Dataset "new" 
+
+I have 6 variables in this dataset, the outcome variable is Lungcap which is the measure of lung capacity and 5 explanatory variables. I would like to relate lung capacity to the age of the child, height of the child, whether or not they identify as a smoker,their gender and whether  or not they born via Caesarean using different statistical analysis techniques.
+
+2. To run decision trees on diabetes dataset.
+
+# Contents
+ 01. Loading a new dataset.
+ 02. Understanding the Dataset.
+ 03. Basic commands.
+ 04. Basic Graphics.
+ 05. Simple linear regression.
+ 06. Multiple regression.
+ 07. Logistic regression.
+ 08. Linear Discriminate Analysis.
+ 09. Decision Trees.
+ 10. Conclusion.
+
+# 01. Loading new Dataset ####
+
+## Choosing the working directory
+setwd("D:/Datasets/1")
+
+```{r}
+library(readxl)
+new <- read_excel("new.xls")
+View(new)
+```
+
+
+# 02. Understanding the Dataset ####
+
+This Dataset consists of 6 variables and it is about the Lung closing capacity of the individuals.
+
+# 03. Basic commands ####
+
+### length()
+```{r}
+length(new)
+
+```
+
+the length of the dataset, here in the dataset we have 6 columns so the length is shown as 6.
+
+### ls()
+```{r}
+ls(new)
+
+```
+
+ls() function gives us the list of objects in the dataset.
+
+### Calculating the mean, variance, square root and standard deviation of the Lungcapacity column in the dataset:
+
+```{r}
+mean(new$`LungCap(cc)`)
+
+var(new$`LungCap(cc)`)
+
+sqrt(new$`LungCap(cc)`)
+
+sd(new$`LungCap(cc)`)
+
+```
+
+
+# 04. Basic Graphics ####
+
+### Plot
+
+```{r}
+y <- (new$`LungCap(cc)`)
+
+x <- (new$`Height(inches)`)
+
+plot(x,y)
+
+```
+
+### Histogram
+
+```{r}
+hist(x)
+
+```
+
+### Adding color for the histogram ##
+
+```{r}
+hist(y, col = 2)
+
+```
+
+both the x and y are showing gaussian distribution.
+
+### Summary
+
+```{r}
+summary(new)
+
+```
+Summary function gives the numerical summary of all the variables in our dataset
+
+### Summary of single variable
+
+```{r}
+summary(new$`LungCap(cc)`)
+
+```
+
+
+# 05. Simple linear regression ####
+
+Simple linear regression is useful for examining the relationship between 2 numeric values.
+
+When only two variables are involved in the functional relationship is known as simple regression and if the relationship between two variables is a straight line, it is known as simple linear regression.
+
+In this model, I am fitting a simple linear regression model using Age as Independent or X-variable and lung capacity as the dependent variable denoted by y.
+
+
+```{r}
+lm.fit <- lm(`LungCap(cc)`~`Age( years)`, data= new)
+attach(new)
+lm.fit <- lm(`LungCap(cc)`~ `Age( years)`)
+
+lm.fit
+
+```
+ 
+## Summary of this model:
+
+```{r}
+summary(lm.fit)
+
+```
+
+The Median is close to 0, so we can say our model is not skewed
+
+The residuals are symmetrically distributed as the Min and Max as well as 1Q and 3Q are close in magnitude.
+
+In the summary, we got an R-squared value of 0.6719 which tells us that approximately 67% of the variation in Lung capacity can be explained by the Age factor
+
+The F-statistic and P-value for an overall test of the significance of our model, this tests the Null Hypothesis that all the model coefficients are 0; here the slope for Age is 0.
+
+The residual standard error gives an idea of how far observed Lung capacity (Y values) are from the predicted or fitted Lung capacity ( The Y-hats), this gives us an idea of a typical-sized residual or error.
+
+The intercept 1.14686 is the estimated mean Y value when all X values are 0.
+
+
+```{r}
+names(lm.fit)
+
+coef(lm.fit)
+
+```
+
+The predict function used to produce confidence intervals and prediction intervals for the prediction of Lungcapacity for a given value of Age
+
+```{r}
+predict(lm.fit, data.frame( `Age( years)` = (c(5, 10, 15) )), interval = "confidence")
+
+predict(lm.fit, data.frame( `Age( years)` = (c(5, 10, 15) )), interval = "prediction")
+
+```
+
+Now plot Age and LungCap(cc) along with the least squares regression line using the plot() and abline() functions.
+
+```{r}
+plot(`Age( years)` , `LungCap(cc)`)
+abline(lm.fit)
+
+```
+This gives us the visual evidence for linearity in the relationship between Age and LungCap(cc) 
+
+```{r}
+plot(`Age( years)` , `LungCap(cc)`)
+
+abline(lm.fit, lwd =3, col = "Gold")
+
+```
+
+## Diagnostics plots
+
+```{r}
+par(mfrow = c(2, 2))
+plot(lm.fit)
+
+```
+
+Linearity is clearly seen in the Diagnostic plots as the red line is flat.
+
+In the Q-Q plot, the residuals are in a diagonal line which tells us the Y values are normally distributed.
+
+
+The function rstudent() will return the studentized residuals, and we can use this function to plot the residuals against the ﬁtted values.
+
+```{r}
+par(mfrow = c(1, 3))
+plot(predict(lm.fit), residuals(lm.fit))
+plot(predict(lm.fit), rstudent(lm.fit))
+plot(residuals(lm.fit), rstudent(lm.fit))
+
+```
+On the basis of the residual plots, we can say the data is linear.
+
+```{r}
+par(mfrow = c(1, 1))
+plot(hatvalues(lm.fit))
+
+which.max(hatvalues(lm.fit)) 
+
+```
+The which.max() function identiﬁes the index of the largest element of a vector. In this case, it tells us which observation has the largest leverage statistic.
+
+### Predicting the Lung Capacity based on the variable Age, Based on the summary we create an equation
+
+Based on the summary we create an equation with the intercept and coefficient values.
+
+```{r}
+Y <- (1.14686) + (0.54485*20)
+
+Y
+
+```
+we took the Intercept and assumed the age of the individual as 20 and predicted the Lung capacity of 12.04386cc.
+
+
+# 06. Multiple regression ####
+
+In multiple regression, more than one X variable is used to determine y.
+
+Here, I used Age and height as explanatory X variables.
+
+```{r}
+lm.fit2 <- lm(`LungCap(cc)` ~ `Age( years)`+ `Height(inches)` , data = new)
+summary(lm.fit2)
+
+```
+
+In summary, with the Multiple R squared value, we can say that approximately 84% of the variation in Lung capacity can be explained by Age and Height in this model.
+
+The null hypothesis is 0,and the slope for age and height is 0 by F-statistic and p-value.
+
+The residual standard error gives an idea of how far observed lung capacity Y values are from the predicted lung capacity Y Hats.
+
+Intercept -11.747 is the estimated mean y value when all X values are 0, that is the estimated mean lung capacity for someone with age and height of 0 value
+
+The slope for Age 0.126 is the effect of age on lung capacity adjusting or controlling for height, so with one year increase in Age an increase of 0.126 in lung capacity adjusting or controlling for height, the hypothesis test for the slope for Age = 0
+
+The slope for height is 0.278 is the estimated effect of height on lung capacity adjusting for age, the test for the hypothesis, the slope is 0.
+
+### Correlation between age and height in Pearsons method:
+
+```{r}
+cor(`Age( years)`, `Height(inches)` , method = "pearson")
+
+```
+
+By correlation, we can observe that age and height are very highly correlated, the high value of correlation between age and height shows that these two effects are somewhat bounded together.
+
+### Predicting the lung capacity based on this model
+ y = a + b1x1 + b2x2 +...+ bnxn 
+
+```{r}
+y <- (-11.747065) + (0.126368*22) + (0.278432*90)
+
+y
+
+
+```
+Here I took the intercepts and assumed the age as 20 years and height as 90 inches and predicted the lung capacity 16.09191 using the intercepts.
+
+## ANOVA
+
+```{r}
+lm.fit <- lm(`LungCap(cc)`~ `Age( years)`)
+anova(lm.fit, lm.fit2)
+
+```
+
+The ANOVA() function performs a hypothesis test comparing the two models.
+The F-statistic value of 786.84 and the associated P value is 0, this gives clear evidence that model 2 is superior yo model 1.
+
+## Diagnostic plots
+
+```{r}
+par(mfrow = c(2, 2))
+plot(lm.fit2)
+par(mfrow = c(1, 1))
+```
+For checking the non-linearity in the relationship between Lung capacity and Height, we have these residual plots.
+we can see that the X values are Linear.
+
+# 07.Logistic regression ####
+
+```{r}
+glm.fit <- glm(`LungCap(cc)`~., data = new)
+
+glm.fit
+
+summary(glm.fit)
+
+```
+ In summary, it shows that if the Gender is male and Smoking, age and height are significant in impacting the lung closing capacity of the child.
+
+
+# 08. Linear Discriminant Analysis (LDA) ####
+
+Linear Discriminant Analysis (LDA) is used to explore differences between data with two or more classes.
+
+```{r}
+library(MASS)
+
+lda.fit <- lda(Smoke ~ `Age( years)`, data = new)
+lda.fit
+
+plot(lda.fit)
+
+lda.pred = predict(lda.fit, new)
+names(lda.pred)
+
+```
+It shows that 89% of the individuals are not smoking and the rest 10% are smoking in our dataset.
+In the group it shows the age below 12.03 are not smoking and the age above 14.77 are smoking in our given dataset
+
+```{r}
+lda.pred = predict(lda.fit, new)
+names(lda.pred)
+
+lda.class = lda.pred$class
+table(lda.class, Smoke)
+
+```
+Out of 725 total individuals, 648 are non-smoking and 77 are smoking
+
+```{r}
+mean(lda.class == Smoke)
+
+```
+Calculate the mean that is 0.8937
+
+```{r}
+sum( lda.pred$posterior[, 1] >= .5)
+
+```
+Applying a 50% threshold to the posterior probabilities allows us to recreate the predictions contained in lda.pred$class.
+
+```{r}
+sum( lda.pred$posterior[, 1] < .5)
+
+lda.pred$posterior[1:20, 1]
+
+lda.class[1:20] 
+
+sum(lda.pred$posterior[ , 1] > .9)
+
+```
+by this prediction there is probability of an increase in the number of smokers by the age can be predicted.
+
+
+# 09. Decision trees ####
+
+Decision tree is a graph to represent results in the form of a tree.
+
+```{r}
+library(rpart)
+library(rpart.plot)
+
+```
+
+## Load the diabetes dataset 
+
+Dataset 2: "diabetes" - this dataset is about the outcome of diabetes based on different functions #
+About this data, dataset is taken from Kaggle
+https://www.kaggle.com/datasets/akshaydattatraykhare/diabetes-dataset
+
+```{r}
+diabetes <- read.csv("D:/Datasets/maybe/diabetes.csv")
+
+summary(diabetes)
+
+str(diabetes)
+
+```
+
+## Classification tree model
+
+```{r}
+diabetes_model <- rpart(formula = diabetes$Outcome~. , data = diabetes, method = "class")
+
+```
+
+## display the decision tree
+
+```{r}
+
+rpart.plot(x= diabetes_model, yesno= 2, type = 0, extra= 0)
+```
+
+In the desicion tree plot we can see, that if Glucose is more than 128, if it is yes the tree branches towards age and bmi, and gives the outcome of the diabetes.
+
+# Conclusion
+In this Assignment I have taken two datasets from Kaggle one is New dataset and analysed the Lungcapacity using Simple linear Regression, Multiple linear regression and also i have used Logistic regression and a Non-Linear model Linear Discriminate Analysis in this dataset
+
+In the Second Dataset, i have taken the diabetes data from kaggle and analysed it by decision Trees.
+
+# References
+
+1.Dataset "new" was taken from Kaggle:
+https://www.kaggle.com/datasets/radhakrishna4/lung-capacity
+
+2. Dataset "Diabetes" is taken from kaggle
+https://www.kaggle.com/datasets/akshaydattatraykhare/diabetes-dataset
+
+3. Analysis and intrepretation of the dataset is done by following the labs in the module C7081:
+https://c7081-2022.github.io/website/
+
+
+```{r example-code-chunk, include = TRUE}
